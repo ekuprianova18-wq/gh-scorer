@@ -12,7 +12,7 @@ class ScoreCalculator:
     """
 
     @staticmethod
-    def calculate_total_score(repo_data, commits_count, issues_stats):
+    def calculate_total_score(repo_data, commits_count, issues_stats, contributors_count=None):
         """
         Главная функция расчёта.
         repo_data: словарь с ключами 'stars' и 'last_release_date'
