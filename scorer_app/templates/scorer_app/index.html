@@ -1,0 +1,45 @@
+{% extends 'scorer_app/base.html' %}
+
+{% block title %}Главная - gh-scorer{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">📊 Оценка надежности GitHub репозиториев</h1>
+
+    <div class="row">
+        {% for item in repos_data %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{ item.repo.full_name }}
+                        </h5>
+                        <p class="card-text text-muted small">
+                            {{ item.repo.description|truncatechars:100 }}
+                        </p>
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <span class="badge bg-info">⭐ {{ item.repo.stars|default:"0" }}</span>
+                                <span class="badge bg-secondary">🍴 {{ item.repo.forks|default:"0" }}</span>
+                            </div>
+                            <div class="col-6 text-end">
+                                {% if item.score %}
+                                    <span class="badge {% if item.score >= 70 %}bg-success
+                                                       {% elif item.score >= 40 %}bg-warning
+                                                       {% else %}bg-danger{% endif %} fs-6">
+                                        {{ item.score }}/100
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Нет оценки</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning">Нет добавленных репозиториев. Добавьте первый!</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
