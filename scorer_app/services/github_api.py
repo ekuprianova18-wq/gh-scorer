@@ -1,5 +1,10 @@
 import requests
 from datetime import datetime, timedelta
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 class GitHubAPI:
     """
@@ -11,8 +16,13 @@ class GitHubAPI:
     def __init__(self, token=None):
         """
         Токен можно передать, чтобы было больше запросов
+        Если токен не передан, пробуем взять из .env
         """
         self.session = requests.Session()
+
+        if token is None:
+            token = os.getenv('GITHUB_TOKEN')
+
         if token:
             self.session.headers.update({
                 'Authorization': f'Bearer {token}',
@@ -144,14 +154,3 @@ class GitHubAPI:
             return 0
         except Exception:
             return 0
-
-
-if __name__ == "__main__":
-    api = GitHubAPI()
-    info = api.get_repo_info("pandas-dev/pandas")
-    if info:
-        print(f"Репозиторий: {info['full_name']}")
-        print(f"Звёзд: {info['stars']}")
-        print(f"Форков: {info['forks']}")
-    else:
-        print("Не удалось получить данные")
