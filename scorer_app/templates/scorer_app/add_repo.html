@@ -3,17 +3,29 @@
 {% block title %}Добавить репозиторий{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="mb-4">➕ Добавить репозиторий</h2>
-        <p class="text-muted">Введите ссылку на GitHub репозиторий для анализа</p>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm p-4">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold"> Добавить репозиторий</h2>
+                    <p class="text-muted">Введите ссылку на GitHub репозиторий для анализа</p>
+                </div>
 
-        <form method="post" class="mt-4">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-success">Добавить</button>
-            <a href="/" class="btn btn-secondary">Назад</a>
-        </form>
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        {{ form.as_p }}
+                    </div>
+                    
+                    <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-success px-5 py-2 fw-bold">Добавить</button>
+                        <a href="/" class="btn btn-light px-5 py-2 border text-dark">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

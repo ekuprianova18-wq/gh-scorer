@@ -6,25 +6,91 @@
     <title>{% block title %}gh-scorer{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .score-high { color: #198754; font-weight: bold; }
-        .score-medium { color: #ffc107; font-weight: bold; }
-        .score-low { color: #dc3545; font-weight: bold; }
-        .card { transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        :root {
+            --bg-main: #f6f8fa;
+            --text-main: #24292f;
+            --card-border: #d0d7de;
+            --brand-color: #2da44e; /* Цвет кнопок в стиле GitHub */
+        }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+        .navbar {
+            background-color: #24292f !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .navbar-brand { 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+        }
+        .card {
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(149, 157, 165, 0.15);
+        }
+        .badge {
+            font-weight: 600;
+            padding: 0.55em 0.8em;
+            border-radius: 20px;
+        }
+        .btn { 
+            border-radius: 8px; 
+            font-weight: 500; 
+            transition: all 0.2s;
+        }
+        .btn-success {
+            background-color: var(--brand-color);
+            border-color: var(--brand-color);
+        }
+        .btn-success:hover {
+            background-color: #2c974b;
+            border-color: #2c974b;
+        }
+        
+        /* Глобальная стилизация стандартных форм Django */
+        form p { margin-bottom: 1.2rem; }
+        form label { 
+            font-weight: 600; 
+            margin-bottom: 0.4rem; 
+            display: inline-block; 
+        }
+        form input[type="text"], form input[type="url"], form input[type="number"] {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background-color: #ffffff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        form input:focus {
+            border-color: #0969da;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3);
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-dark bg-dark mb-5">
         <div class="container">
-            <a class="navbar-brand" href="/">🐙 gh-scorer</a>
-            <div>
-                <a href="/" class="btn btn-outline-light btn-sm">Главная</a>
-                <a href="{% url 'add_repo' %}" class="btn btn-outline-light btn-sm">+ Добавить</a>
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <span class="fs-4">🐙</span> gh-scorer
+            </a>
+            <div class="d-flex gap-2">
+                <a href="/" class="btn btn-outline-light btn-sm px-3">Главная</a>
+                <a href="{% url 'add_repo' %}" class="btn btn-success btn-sm px-3">+ Добавить</a>
             </div>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container pb-5">
         {% block content %}{% endblock %}
     </div>
 

@@ -3,31 +3,35 @@
 {% block title %}Главная - gh-scorer{% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">📊 Оценка надежности GitHub репозиториев</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0"> Оценка надежности GitHub репозиториев</h2>
+    </div>
 
-    <div class="row">
+    <div class="row g-4">
         {% for item in repos_data %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <a href="{% url 'detail' item.repo.id %}" class="text-decoration-none">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 d-flex flex-column">
+                    <div class="card-body flex-grow-1">
+                        <h5 class="card-title mb-3">
+                            <a href="{% url 'detail' item.repo.id %}" class="text-decoration-none fw-bold text-primary">
                                 {{ item.repo.full_name }}
                             </a>
                         </h5>
-                        <p class="card-text text-muted small">
+                        <p class="card-text text-muted small mb-4">
                             {{ item.repo.description|truncatechars:100 }}
                         </p>
-                        <div class="row mt-3">
-                            <div class="col-6">
-                                <span class="badge bg-info">⭐ {{ item.repo.stars|default:"0" }}</span>
-                                <span class="badge bg-secondary">🍴 {{ item.repo.forks|default:"0" }}</span>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-light text-dark border">⭐ {{ item.repo.stars|default:"0" }}</span>
+                                <span class="badge bg-light text-dark border">🍴 {{ item.repo.forks|default:"0" }}</span>
                             </div>
-                            <div class="col-6 text-end">
+                            <div>
                                 {% if item.score %}
                                     <span class="badge {% if item.score >= 70 %}bg-success
-                                                       {% elif item.score >= 40 %}bg-warning
-                                                       {% else %}bg-danger{% endif %} fs-6">
+                                                       {% elif item.score >= 40 %}bg-warning text-dark
+                                                       {% else %}bg-danger{% endif %} fs-6 shadow-sm">
                                         {{ item.score }}/100
                                     </span>
                                 {% else %}
@@ -40,7 +44,10 @@
             </div>
         {% empty %}
             <div class="col-12">
-                <div class="alert alert-warning">Нет добавленных репозиториев. Добавьте первый!</div>
+                <div class="alert alert-warning border-0 shadow-sm rounded-3 py-4 text-center">
+                    <span class="fs-4 d-block mb-2">👀</span>
+                    Нет добавленных репозиториев. Добавьте свой первый проект!
+                </div>
             </div>
         {% endfor %}
     </div>
