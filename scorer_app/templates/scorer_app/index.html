@@ -11,7 +11,9 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">
-                            {{ item.repo.full_name }}
+                            <a href="{% url 'detail' item.repo.id %}" class="text-decoration-none">
+                                {{ item.repo.full_name }}
+                            </a>
                         </h5>
                         <p class="card-text text-muted small">
                             {{ item.repo.description|truncatechars:100 }}

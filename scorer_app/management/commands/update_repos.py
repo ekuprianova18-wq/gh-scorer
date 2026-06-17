@@ -11,8 +11,6 @@ class Command(BaseCommand):
         self.stdout.write('Начинаю обновление...')
 
         api = GitHubAPI()
-
-        # Берём все репозитории из БД
         repos = Repository.objects.all()
         self.stdout.write(f'Найдено репозиториев: {repos.count()}')
 
@@ -22,10 +20,10 @@ class Command(BaseCommand):
             # Получаем свежие данные из GitHub
             repo_data = api.get_repo_info(repo.full_name)
             if not repo_data:
-                self.stdout.write(f'  Ошибка: не удалось получить данные')
+                self.stdout.write(f'   Ошибка: не удалось получить данные')
                 continue
 
-            # Обновляем информацию в БД
+            # Обновляем основную информацию о репозитории
             repo.stars = repo_data['stars']
             repo.forks = repo_data['forks']
             repo.description = repo_data['description']
@@ -33,11 +31,12 @@ class Command(BaseCommand):
             repo.last_release_date = repo_data['last_release_date']
             repo.save()
 
-            # Получаем статистику: коммиты, issues
+            # Получаем статистику
             commits_count = api.get_commits_count_last_30_days(repo.full_name)
             issues_stats = api.get_issues_stats(repo.full_name)
             issues_stats['closed_issues_count'] = issues_stats.get('open_issues_count', 0)
 
+            # Создаем новый снимок
             snapshot = ActivitySnapshot.objects.create(
                 repository=repo,
                 commits_last_30_days=commits_count,
@@ -46,6 +45,7 @@ class Command(BaseCommand):
                 contributors_count=0,
             )
 
+            # Рассчитываем оценку
             scores = ScoreCalculator.calculate_total_score(
                 repo_data=repo_data,
                 commits_count=commits_count,
@@ -53,19 +53,17 @@ class Command(BaseCommand):
                 contributors_count=0,
             )
 
-            # Сохраняем или обновляем оценку
-            ReliabilityScore.objects.update_or_create(
+            # Создаем новую оценку (привязываем к новому снимку)
+            ReliabilityScore.objects.create(
                 repository=repo,
-                defaults={
-                    'snapshot': snapshot,
-                    'total_score': scores['total_score'],
-                    'commit_score': scores['commit_score'],
-                    'issues_score': scores['issues_score'],
-                    'release_score': scores['release_score'],
-                    'community_score': scores['stars_score'],
-                }
+                snapshot=snapshot,
+                total_score=scores['total_score'],
+                commit_score=scores['commit_score'],
+                issues_score=scores['issues_score'],
+                release_score=scores['release_score'],
+                community_score=scores['stars_score'],
             )
 
-            self.stdout.write(f'  Оценка: {scores["total_score"]}/100')
+            self.stdout.write(f'   Оценка: {scores["total_score"]}/100 (снимок {snapshot.snapshot_date})')
 
-        self.stdout.write('Готово!')
+        self.stdout.write(' Готово')

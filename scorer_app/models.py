@@ -35,7 +35,7 @@ class ActivitySnapshot(models.Model):
 
 class ReliabilityScore(models.Model):
     """Оценка надежности репозитория"""
-    repository = models.OneToOneField(Repository, on_delete=models.CASCADE, related_name='reliability_score')
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE, related_name='reliability_scores')
     snapshot = models.ForeignKey(ActivitySnapshot, on_delete=models.CASCADE)
     total_score = models.FloatField(default=0, help_text="Общая оценка 0-100")
     commit_score = models.FloatField(default=0)
