@@ -148,3 +148,58 @@ def add_repo(request):
         form = AddRepoForm()
 
     return render(request, 'scorer_app/add_repo.html', {'form': form})
+
+
+def update_repo(request, repo_id):
+    repo = get_object_or_404(Repository, id=repo_id)
+
+    api = GitHubAPI()
+    repo_data = api.get_repo_info(repo.full_name)
+
+    if repo_data:
+        # Обновляем данные репозитория
+        repo.stars = repo_data['stars']
+        repo.forks = repo_data['forks']
+        repo.description = repo_data['description']
+        repo.last_commit_date = repo_data['last_commit_date']
+        repo.last_release_date = repo_data['last_release_date']
+        repo.save()
+
+        # Получаем статистику
+        commits_count = api.get_commits_count_last_30_days(repo.full_name)
+        issues_stats = api.get_issues_stats(repo.full_name)
+        issues_stats['closed_issues_count'] = issues_stats.get('open_issues_count', 0)
+
+        # Создаём новый снимок
+        snapshot = ActivitySnapshot.objects.create(
+            repository=repo,
+            commits_last_30_days=commits_count,
+            open_issues_count=issues_stats['open_issues_count'],
+            avg_issue_close_days=issues_stats['avg_issue_close_days'],
+            contributors_count=0,
+        )
+
+        # Считаем оценку
+        scores = ScoreCalculator.calculate_total_score(
+            repo_data=repo_data,
+            commits_count=commits_count,
+            issues_stats=issues_stats,
+            contributors_count=0,
+        )
+
+        # Создаём новую оценку
+        ReliabilityScore.objects.create(
+            repository=repo,
+            snapshot=snapshot,
+            total_score=scores['total_score'],
+            commit_score=scores['commit_score'],
+            issues_score=scores['issues_score'],
+            release_score=scores['release_score'],
+            community_score=scores['stars_score'],
+        )
+
+        messages.success(request, f'Данные обновлены! Новая оценка: {scores["total_score"]}/100')
+    else:
+        messages.warning(request, ' Не удалось обновить данные. GitHub API временно недоступно.')
+
+    return redirect('detail', repo_id=repo.id)
