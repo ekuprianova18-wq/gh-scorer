@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Repository
 
 
@@ -14,3 +15,9 @@ class AddRepoForm(forms.ModelForm):
             'full_name': 'Например: django/django',
             'url': 'https://github.com/owner/repo',
         }
+
+    def clean_full_name(self):
+        full_name = self.cleaned_data.get('full_name')
+        if Repository.objects.filter(full_name__iexact=full_name).exists():
+            raise ValidationError('Репозиторий с таким названием уже существует.')
+        return full_name

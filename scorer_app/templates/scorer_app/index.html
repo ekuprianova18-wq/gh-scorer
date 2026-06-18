@@ -4,7 +4,22 @@
 
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0"> Оценка надежности GitHub репозиториев</h2>
+        <h2 class="fw-bold mb-0">Оценка надежности GitHub репозиториев</h2>
+    </div>
+
+    <!-- Поиск -->
+    <div class="row mb-4">
+        <div class="col-md-8 col-lg-6">
+            <form method="get" action="{% url 'index' %}" class="d-flex">
+                <input type="text" name="q" class="form-control form-control-lg me-2"
+                       placeholder="🔍 Например: pandas-dev/pandas"
+                       value="{{ query }}">
+                <button type="submit" class="btn btn-success px-4">Поиск</button>
+            </form>
+            {% if query %}
+                <p class="text-muted mt-2 small">Результаты поиска: <strong>{{ query }}</strong></p>
+            {% endif %}
+        </div>
     </div>
 
     <div class="row g-4">
@@ -46,7 +61,11 @@
             <div class="col-12">
                 <div class="alert alert-warning border-0 shadow-sm rounded-3 py-4 text-center">
                     <span class="fs-4 d-block mb-2">👀</span>
-                    Нет добавленных репозиториев. Добавьте свой первый проект!
+                    {% if query %}
+                        Ничего не найдено по запросу <strong>"{{ query }}"</strong>
+                    {% else %}
+                        Нет добавленных репозиториев. Добавьте свой первый проект!
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}

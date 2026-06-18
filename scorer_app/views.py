@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.db.models import Q
 from .models import Repository, ReliabilityScore, ActivitySnapshot
 from .forms import AddRepoForm
 from .services.github_api import GitHubAPI
@@ -8,7 +9,15 @@ from .services.score_calculator import ScoreCalculator
 
 
 def index(request):
+    query = request.GET.get('q', '').strip()
+
     repos = Repository.objects.all()
+
+    if query:
+        repos = repos.filter(
+            Q(full_name__icontains=query) |
+            Q(description__icontains=query)
+        )
 
     repos_data = []
     for repo in repos:
@@ -23,7 +32,11 @@ def index(request):
 
     repos_data.sort(key=lambda x: x['score'] if x['score'] is not None else -1, reverse=True)
 
-    return render(request, 'scorer_app/index.html', {'repos_data': repos_data})
+    context = {
+        'repos_data': repos_data,
+        'query': query,
+    }
+    return render(request, 'scorer_app/index.html', context)
 
 
 def detail(request, repo_id):
