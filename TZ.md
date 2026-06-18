@@ -13,7 +13,7 @@
 Модель 2: ActivitySnapshot (Снимок активности)
 Поля: repository (связь ForeignKey), snapshot_date, commits_last_30_days, open_issues_count, avg_issue_close_days, contributors_count.
 Модель 3: ReliabilityScore (Оценка надежности)
-Поля: repository (связь OneToOneField), snapshot (связь ForeignKey), total_score, commit_score, issues_score, release_score, community_score, calculated_at.
+Поля: repository (связь ForeignKey), snapshot (связь ForeignKey), total_score, commit_score, issues_score, release_score, community_score, calculated_at.
 
 4. Ключевой функционал
 * Пользователь открывает главную страницу и видит список репозиториев с их оценкой надежности, может отсортировать по оценке или звездам.
@@ -26,3 +26,6 @@
 Аналитика: Использование библиотеки Pandas для агрегации метрик и расчета средних значений. Построение интерактивных графиков через Plotly.
 
 8. Изменения в ходе реализации
+* Реализован поиск репозиториев на главной странице по названию и описанию.
+* На детальную страницу добавлена таблица с расширенной информацией: дата проверки, количество коммитов за 30 дней, открытые issues, среднее время закрытия, контрибьюторы, последний релиз.
+* В модели ReliabilityScore связь repository изменена с OneToOneField на ForeignKey для хранения истории оценок и построения графика динамики.
